@@ -1394,3 +1394,141 @@ No UI element may imply that TRAFFIC-X directly controls real-world infrastructu
 Innovation is defined by improved decision quality, not cosmetic AI. The core technical contribution is the combination of Network Digital Twin, Traffic Forecasting, Incident Reasoning, Propagation Engine, OD-Aware Diversion, Counterfactual Simulation, Planning Candidate Evaluation, and Explainability & Uncertainty.
 
 The integrated system should answer: **What is happening, why is it happening, what is likely to happen next, how could it propagate, and what would happen under a simulated intervention?**
+
+# Judge-Aligned Architecture Addendum
+
+## Parallel system flow
+
+TRAFFIC-X uses a parallel architecture rather than a purely linear pipeline:
+
+```text
+Dataset
+  ↓
+Ingestion & Validation
+  ↓
+Preprocessing
+(clean / impute / outliers / temporal features)
+  ↓
+ ┌─────────────────────┬─────────────────────┐
+ ↓                     ↓                     ↓
+Traffic State /    Incident /          Network &
+Congestion         Anomaly Detection   Context Reasoning
+ └─────────────────────┴─────────────────────┘
+                         ↓
+                 Forecasting
+              +15 / +30 / +45 / +60
+                         ↓
+               Spillback Analysis
+                         ↓
+            Advisory & Diversion
+                 Simulation
+                         ↓
+          Counterfactual Simulation
+
+Historical Data
+  ↓
+Recurring Bottleneck Analysis
+  ↓
+Planning Candidates
+  ↓
+Intervention Simulation
+
+Both branches
+      ↓
+Explainability & Confidence
+      ↓
+Dashboard
+
+Evaluation & Robustness Testing runs alongside all stages.
+Continuous Replay processes the dataset chronologically in 5-minute steps.
+```
+
+## Intelligence methods
+
+| Component | Baseline method | Purpose |
+|---|---|---|
+| Traffic State / Congestion | Distribution-calibrated rules/classifier | Current congestion state |
+| Incident / Anomaly | Incident interval join + Isolation Forest/anomaly scoring | Supported incidents and unusual traffic |
+| Forecasting | Historical baseline + LightGBM | 15/30/45/60 minute forecast |
+| Network reasoning | NetworkX directed graph | Connectivity and upstream/downstream relationships |
+| Spillback | Graph traversal + capacity/state rules | Estimate propagation |
+| Diversion | Capacity-constrained shortest paths + OD demand | Simulated aggregate diversion |
+| Counterfactual | Custom network-flow simulation | Before/after intervention |
+| Bottlenecks | Historical frequency/severity/duration analysis | Recurring bottlenecks |
+| Confidence | Evidence and calibrated uncertainty layer | Evidence, uncertainty and limitations |
+
+Advanced graph-temporal models may be evaluated later only if validation demonstrates improvement.
+
+## Continuous replay
+
+The supplied dataset has 5-minute resolution. TRAFFIC-X processes observations in chronological order. At each replay timestamp it validates the new observations, updates the network state, updates incident/context status, generates 15–60 minute forecasts, updates propagation estimates and refreshes the dashboard.
+
+Future observations and future incident information are not exposed to the current replay state.
+
+## Robustness layer
+
+Robustness is a first-class pipeline component. Preprocessing handles missing values, duplicates, impossible values, spikes, stuck sensors and sensor-quality issues. A stress-testing module evaluates controlled data dropout, sensor noise, changed OD demand and held-out temporal/scenario conditions.
+
+Example stress tests:
+
+```text
+Missing data: 5%, 10%, 20%
+Demand: lower / baseline / higher
+Noise: spikes / stuck readings / invalid values
+Scenario: unseen temporal/scenario conditions
+```
+
+Performance degradation is reported against the normal validation baseline.
+
+## Explainability & confidence
+
+Every alert, forecast and advisory passes through an explainability layer containing:
+
+```text
+Result
+Evidence
+Confidence / uncertainty
+Assumptions
+Limitations
+Data-quality notes
+Provenance
+```
+
+Provenance values are `OBSERVED`, `FORECAST`, `SIMULATED`, `ESTIMATED`, `ASSUMPTION`, and `TARGET`. Confidence must be derived from measurable evidence/model uncertainty and must not be an arbitrary percentage.
+
+## Evaluation module
+
+The evaluation module runs independently alongside the inference pipeline.
+
+Detection metrics:
+
+- Precision
+- Recall
+- F1-score
+- False Alarm Rate
+
+Forecast metrics:
+
+- MAE
+- RMSE
+- WAPE where appropriate
+- per horizon: 15/30/45/60 minutes
+- peak/non-peak breakdown where useful
+
+Recommendation metrics:
+
+- delay change,
+- average-speed change,
+- travel-time change,
+- queue change,
+- congested-segment change,
+- network spillover,
+- feasibility.
+
+## Historical bottleneck branch
+
+Recurring bottleneck analysis operates on historical traffic data, independently of the current forecast branch. It uses congestion frequency, severity, duration, peak recurrence and incident/roadwork adjustment to identify persistent locations. Matching planning candidates are then evaluated through counterfactual intervention simulation.
+
+## Simulation-only constraint
+
+All actions, diversion plans, traffic-management responses, construction/network suggestions, capacity modifications and signal-plan changes remain simulated or advisory only. TRAFFIC-X does not directly control real-world infrastructure.

@@ -612,3 +612,30 @@ The implementation should maintain the following derived metadata for model outp
 | `model_version` | string | Forecast/anomaly model version |
 | `dataset_version` | string | Dataset version used |
 | `random_seed` | integer | Reproducibility seed |
+
+## Judge-Aligned Derived Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `replay_timestamp` | datetime | Current timestamp in chronological replay |
+| `imputation_flag` | boolean | Indicates that an input was imputed |
+| `outlier_flag` | boolean | Indicates an outlier was detected |
+| `anomaly_score` | numeric | Anomaly score when generated |
+| `anomaly_method` | string | Method used for anomaly detection |
+| `forecast_horizon_min` | integer | 15, 30, 45 or 60 minute horizon |
+| `forecast_uncertainty_low` | numeric | Lower forecast bound when available |
+| `forecast_uncertainty_high` | numeric | Upper forecast bound when available |
+| `confidence_level` | categorical | HIGH/MEDIUM/LOW when qualitative confidence is used |
+| `confidence_method` | string | Evidence/model method used for confidence |
+| `evidence_summary` | text | Evidence supporting an output |
+| `assumptions` | text | Assumptions used |
+| `limitations` | text | Known limitations |
+| `stress_test_id` | string/null | Robustness experiment identifier |
+| `demand_scenario` | string/null | Demand-shift condition |
+| `missingness_rate` | numeric/null | Controlled dropout rate |
+| `false_alarm_flag` | boolean | Evaluated false positive indicator |
+| `evaluation_split` | categorical | Training/validation/holdout/stress-test |
+| `model_version` | string | Model version |
+| `dataset_version` | string | Dataset version |
+| `random_seed` | integer | Reproducibility seed |
+| `provenance_status` | categorical | OBSERVED/FORECAST/SIMULATED/ESTIMATED/ASSUMPTION/TARGET |

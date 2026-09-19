@@ -1952,3 +1952,39 @@ Experiments record dataset version, model version, feature configuration, random
 ### Simulation-only constraint
 
 All actions, diversion plans, traffic-management responses, construction/network suggestions and signal-plan changes remain **simulated or advisory only**. TRAFFIC-X does not directly control or modify real-world traffic infrastructure, vehicles, roads, signals or municipal systems.
+
+## Judge-Aligned Requirements Addendum
+
+### Explainability and confidence
+
+Every alert, forecast and advisory must expose evidence, uncertainty/confidence, assumptions and limitations. Outputs carry provenance labels: `OBSERVED`, `FORECAST`, `SIMULATED`, `ESTIMATED`, `ASSUMPTION`, or `TARGET`.
+
+### Robustness
+
+The preprocessing pipeline explicitly handles missing values, duplicates, impossible readings, spikes, stuck sensors and low-quality observations. A robustness harness performs controlled data dropout, sensor-noise injection, demand shifts and unseen temporal/scenario tests and reports performance degradation.
+
+### Evaluation
+
+A dedicated evaluation module performs time-based validation and tracks:
+
+- congestion/incident Precision, Recall and F1,
+- false-alarm rate,
+- forecast MAE/RMSE/WAPE,
+- forecast performance at 15/30/45/60 minutes,
+- counterfactual recommendation impact.
+
+### Continuous update
+
+The system supports chronological replay of the supplied 5-minute dataset. Each timestamp updates the network state, congestion/incident analysis, forecast, propagation estimates and dashboard without requiring live infrastructure integration.
+
+### Named intelligence methods
+
+The baseline implementation uses LightGBM for forecasting, Isolation Forest/anomaly scoring for traffic anomalies, NetworkX for network reasoning, capacity-constrained routing with OD demand for diversion, custom counterfactual network-flow simulation, and historical frequency/severity/duration analysis for recurring bottlenecks.
+
+### Parallel architecture
+
+The historical recurring-bottleneck branch is independent of the current forecast branch and feeds planning/intervention simulation. Both branches feed the explainability/confidence layer and dashboard.
+
+### Simulation-only constraint
+
+All actions, diversion plans, construction/network suggestions, capacity changes and signal-plan changes remain simulated or advisory only. No real-world traffic infrastructure is controlled or modified.
