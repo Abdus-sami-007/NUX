@@ -1256,3 +1256,141 @@ A complete TRAFFIC-X implementation should be able to demonstrate:
 - no live infrastructure dependency.
 
 This design keeps the system aligned with the supplied training/validation data and the software-only nature of the challenge.
+
+# Evaluation & Judge Alignment
+
+TRAFFIC-X is evaluated against the challenge judging criteria using measurable, reproducible tests rather than feature presence alone.
+
+## 1. Congestion & Incident Detection Evaluation
+
+### Congestion detection
+
+Evaluate congestion-state classification against labelled/derived reference states using:
+
+- Precision
+- Recall
+- F1-score
+- False Positive Rate
+- False Alarm Rate
+
+Report results overall and, where sample size permits, by congestion class, peak/non-peak, road class, and sensor-quality band.
+
+### Incident detection
+
+Evaluate supported incident detection using Precision, Recall, F1-score, and False Alarm Rate. Report results by incident type and severity where sufficient observations exist.
+
+The system must distinguish observed incident, traffic anomaly, possible cause, and unknown cause. An incident must not be asserted solely from congestion without supporting evidence.
+
+## 2. Traffic Forecasting Evaluation
+
+Forecast exactly +15, +30, +45, and +60 minutes for speed, flow, and congestion.
+
+Primary metrics:
+
+- MAE
+- RMSE
+- WAPE where appropriate
+
+Results are reported per horizon, per target, overall, and peak/non-peak where useful.
+
+The temporal split remains:
+
+```text
+Training:   2026-01-01 → 2026-01-15
+Validation: 2026-01-16 → 2026-01-19
+```
+
+Forecast target files are labels only and must never be used as model input features.
+
+## 3. Adaptive Recommendation Evaluation
+
+Recommendations are evaluated through the counterfactual simulator rather than by claiming real-world execution.
+
+For each scenario measure:
+
+- total delay change,
+- average speed change,
+- travel-time change,
+- queue change,
+- congested-segment change,
+- affected-segment count,
+- network spillover,
+- route feasibility,
+- capacity constraints.
+
+Each result exposes baseline, counterfactual, absolute change, percentage change, evidence, assumptions, and limitations.
+
+All actions, diversion plans, traffic-management responses, capacity modifications, construction/network suggestions, and signal-plan changes remain **simulated or advisory only**.
+
+## 4. Robustness Evaluation
+
+TRAFFIC-X explicitly tests performance under changed and degraded conditions.
+
+### Missing-data tests
+
+Evaluate representative controlled missingness levels such as 5%, 10%, and 20%.
+
+### Sensor-noise tests
+
+Test spikes, stuck readings, invalid values, low sensor quality, and duplicate observations.
+
+### Demand-shift tests
+
+Evaluate changed OD-demand conditions, including higher/lower demand relative to the baseline profile.
+
+### Unseen-pattern evaluation
+
+Use held-out temporal/scenario conditions and compare normal validation performance with perturbed/unseen-condition performance. Report performance degradation rather than claiming robustness without evidence.
+
+## 5. Explainability, Confidence & Uncertainty
+
+Every important system output must include provenance and uncertainty information.
+
+### Provenance labels
+
+```text
+OBSERVED
+FORECAST
+SIMULATED
+ESTIMATED
+ASSUMPTION
+TARGET
+```
+
+Forecast displays should expose confidence/uncertainty based on measurable model evidence. The implementation must not present arbitrary confidence percentages.
+
+Where calibrated probabilistic intervals are available, display prediction, lower bound, upper bound, and confidence/coverage information. Otherwise use evidence-based qualitative confidence (`HIGH`, `MEDIUM`, `LOW`) with supporting factors shown.
+
+Recommendation outputs identify supporting evidence, assumptions, uncertainty, data-quality limitations, and model limitations.
+
+## 6. Reproducibility & Technical Reliability
+
+Every experiment records:
+
+- dataset version,
+- model version,
+- feature configuration,
+- random seed,
+- training period,
+- validation period,
+- hyperparameters,
+- evaluation metrics,
+- software/dependency versions.
+
+Recommended project artifacts include `requirements.txt` or `pyproject.toml`, `package-lock.json`, `configs/`, `experiments/`, and `logs/`.
+
+Tests cover data validation, feature generation, graph construction, routing and turn restrictions, propagation, counterfactual simulation, metric calculation, API integration, and forecast leakage.
+
+## 7. UI/UX Judge View
+
+The primary dashboard should make the operational state understandable quickly. The main view exposes network status, current congestion, supported active incidents, 15/30/45/60-minute forecasts, top deteriorating segments, propagation impact, and simulation/recommendation status.
+
+The map distinguishes observed traffic from forecast and simulated results. Recommendations visibly carry `SIMULATED`, `ADVISORY`, `FORECAST`, or `ESTIMATED` status where appropriate.
+
+No UI element may imply that TRAFFIC-X directly controls real-world infrastructure.
+
+## 8. Innovation Evaluation
+
+Innovation is defined by improved decision quality, not cosmetic AI. The core technical contribution is the combination of Network Digital Twin, Traffic Forecasting, Incident Reasoning, Propagation Engine, OD-Aware Diversion, Counterfactual Simulation, Planning Candidate Evaluation, and Explainability & Uncertainty.
+
+The integrated system should answer: **What is happening, why is it happening, what is likely to happen next, how could it propagate, and what would happen under a simulated intervention?**

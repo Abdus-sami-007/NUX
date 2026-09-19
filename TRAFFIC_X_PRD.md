@@ -1920,3 +1920,35 @@ The final system should allow a judge to select a traffic problem and go from:
 → **"What is the estimated impact?"**
 
 without requiring access to any live municipal or physical infrastructure.
+
+## Evaluation, Robustness & Judge Alignment
+
+TRAFFIC-X is validated against the judging criteria through explicit measurable experiments.
+
+### Detection
+
+Congestion and supported incident detection use Precision, Recall, F1-score and false-alarm measures. Results are segmented by relevant traffic conditions where sufficient data exists.
+
+### Forecasting
+
+Forecast accuracy is measured for +15, +30, +45 and +60 minute speed, flow and congestion targets using MAE, RMSE and WAPE where appropriate. Evaluation uses the supplied temporal training/validation split and excludes forecast target files from feature engineering.
+
+### Recommendation quality
+
+Every recommendation is evaluated through a baseline-versus-counterfactual simulation. Operational value is measured through delay, speed, travel time, queue, congestion and network-spillover changes, while feasibility constraints, assumptions and limitations are displayed.
+
+### Robustness
+
+The evaluation suite deliberately perturbs data and demand to test missing observations, sensor noise, duplicates/spikes, low-quality observations, changed OD demand, and unseen temporal/scenario conditions. Performance degradation is reported explicitly.
+
+### Explainability and confidence
+
+Each result carries a provenance label: `OBSERVED`, `FORECAST`, `SIMULATED`, `ESTIMATED`, `ASSUMPTION`, or `TARGET`. Forecasts and recommendations expose uncertainty, evidence, assumptions and limitations. Confidence must be derived from measurable model/evidence conditions and must not be an arbitrary score.
+
+### Reproducibility
+
+Experiments record dataset version, model version, feature configuration, random seed, training/validation period, hyperparameters, dependency versions and evaluation metrics.
+
+### Simulation-only constraint
+
+All actions, diversion plans, traffic-management responses, construction/network suggestions and signal-plan changes remain **simulated or advisory only**. TRAFFIC-X does not directly control or modify real-world traffic infrastructure, vehicles, roads, signals or municipal systems.

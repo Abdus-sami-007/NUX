@@ -591,3 +591,24 @@ Planning analysis
 ```
 
 An AI explanation panel may explain results, but the core intelligence must come from the structured models and simulation engine.
+
+## Evaluation and Provenance Fields
+
+The implementation should maintain the following derived metadata for model outputs and simulation results.
+
+| Field | Type | Description |
+|---|---|---|
+| `provenance_status` | categorical | `OBSERVED`, `FORECAST`, `SIMULATED`, `ESTIMATED`, `ASSUMPTION`, or `TARGET` |
+| `confidence_level` | categorical | `HIGH`, `MEDIUM`, `LOW` when qualitative confidence is used |
+| `confidence_method` | string | Method/evidence used to derive confidence |
+| `evidence_summary` | text | Main evidence supporting the output |
+| `assumptions` | text | Assumptions used by the model/simulation |
+| `limitations` | text | Known data/model limitations |
+| `scenario_id` | string/null | Scenario associated with a counterfactual result |
+| `baseline_metric` | numeric/null | Baseline value for a comparison |
+| `counterfactual_metric` | numeric/null | Simulated value after intervention |
+| `absolute_change` | numeric/null | Counterfactual minus baseline |
+| `percentage_change` | numeric/null | Percentage change from baseline |
+| `model_version` | string | Forecast/anomaly model version |
+| `dataset_version` | string | Dataset version used |
+| `random_seed` | integer | Reproducibility seed |
